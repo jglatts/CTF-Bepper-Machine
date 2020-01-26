@@ -1,0 +1,11 @@
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\bin\Debug\CTF_Tester_GUI.exe.config
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\bin\Debug\CTF_Tester_GUI.exe
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\bin\Debug\CTF_Tester_GUI.pdb
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\bin\Debug\CTF_Tester_GUI.xml
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\obj\Debug\CTF_Tester_GUI.vbprojAssemblyReference.cache
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\obj\Debug\CTF_Tester_GUI.Form1.resources
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\obj\Debug\CTF_Tester_GUI.Resources.resources
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\obj\Debug\CTF_Tester_GUI.vbproj.GenerateResource.cache
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\obj\Debug\CTF_Tester_GUI.exe
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\obj\Debug\CTF_Tester_GUI.xml
+C:\Users\johng\source\repos\CTF_Tester_GUI\CTF_Tester_GUI\obj\Debug\CTF_Tester_GUI.pdb
