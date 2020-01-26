@@ -1,0 +1,11 @@
+Connect the buzzer to 0v and the CTF\Arduino will provide +5v (then back to 0v) and then high
+Add a line to from the buzzer to INPUT_PIN on arduino(line sniff on buzz +5v), and read the voltage 
+      0 = failed
+      1 = success
+Also throw a line to A0 and read analog 
+Add debug/log info to tell which pin(s) arent working
+Figure out what time will work the best, i.e to go pin-to-pin
+Figure out a way to probe around to find the first pin
+Add another output and test switching from both 
+Add 2n2222s ;) 
+Each trace is isolated and no shorts
