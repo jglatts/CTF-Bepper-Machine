@@ -1,16 +1,16 @@
 Imports System.IO
 Imports System.IO.Ports
 Imports System.Threading
-
 ' Windows GUI for the CTF Tester
-
+' ToDo
+'   - add a check that will be sent from arduino to verify the test is completed
+'   - the check will also say which pins passed/failed
 Public Class Form1
     Shared SerialPort1 = New SerialPort()
     Dim count As Integer
     Dim check_short As Boolean
     Dim check_continunity As Boolean
     'Dim pin_array(0 To 10) As Integer
-    
     ' Load the GUI and open up the serial ports
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' set up serial port
@@ -25,7 +25,6 @@ Public Class Form1
         check_short = False
         check_continunity = False
     End Sub
-    
     ' Start-Test button-change function
     ' Verifies that the flex-size if correct and sends it to arudino
     ' If the pin_count not accepted, prompt user to enter another one
@@ -46,33 +45,34 @@ Public Class Form1
         Else
             MsgBox("Please enter the number of FFC traces.", +vbExclamation)
         End If
+
     End Sub
-    
     ' Dynamically add textboxes
     Private Sub addTextBoxes()
         Dim yValue = 77
+        Dim TestLabel = New Label
+        TestLabel.Text = "Test Results"
+        TestLabel.Name = "TestLabel"
+        TestLabel.Location = New Point(542, 60)
         For index As Integer = 1 To count
-            Dim NewTB As New TextBox
-            Dim NewLB As New Label
-            NewTB = New TextBox
-            NewLB = New Label
-            NewTB.Name = "tbNew"
-            NewLB.Name = "labelNew"
+            Dim NewTB = New TextBox
+            Dim NewLB = New Label
+            NewTB.Name = "tbNew" & index
+            NewLB.Name = "labelNew" & index ' give these guys unique names in order to change them later on 
             NewLB.Text = "Pin " & index
             NewTB.Text = "PASSED" ' change this to a nice ol' if-statement
             AddHandler NewTB.TextChanged, AddressOf HandleTextChanged
             NewTB.Location = New Point(536, yValue)
             NewLB.Location = New Point(500, yValue + 2)
             yValue += 25
+            Me.Controls.Add(TestLabel)
             Me.Controls.Add(NewTB)
             Me.Controls.Add(NewLB)
         Next
     End Sub
-
     Private Sub HandleTextChanged(sender As Object, e As EventArgs)
         ' MsgBox("Test")
     End Sub
-
     ' Write to the arduino to begin the test
     ' Sends a key depending on which test is running, 200 for contunity-test and 250 for shorts-test
     Private Sub writeSerial(ByVal data As Byte())
@@ -89,7 +89,6 @@ Public Class Form1
         SerialPort1.Write(data, 0, 1)
         SerialPort1.Close()
     End Sub
-
     ' Check if we should test for continuity
     ' If the button is clicked, we test for continuity 
     Private Sub check_continuity_CheckedChanged(sender As Object, e As EventArgs) Handles check_continuity.CheckedChanged
@@ -99,7 +98,6 @@ Public Class Form1
             check_continunity = False
         End If
     End Sub
-
     ' Check if we should test for shorts
     ' If the button is clicked, we test for shorts
     Private Sub check_shorts_CheckedChanged(sender As Object, e As EventArgs) Handles check_shorts.CheckedChanged
@@ -109,7 +107,6 @@ Public Class Form1
             check_short = False
         End If
     End Sub
-
     ' Poll for data from the serial port
     ' If we receive a 1, the pin passed
     ' If we receive a 0, the pin failed 
@@ -133,10 +130,10 @@ Public Class Form1
         End While
         SerialPort1.Close()
     End Sub
-    
     ' display all values from CTF test in MsgBox's, for now
     ' eventually add textboxes to populate
     Private Sub results_btn_Click(sender As Object, e As EventArgs) Handles results_btn.Click
+
         ' swap failing pins with -1 value to detect them
         'For Each i As Integer In pin_array
         'If i < 0 Then
@@ -150,5 +147,12 @@ Public Class Form1
         'Next
 
     End Sub
-    
+
+    Private Sub clearResults_Click(sender As Object, e As EventArgs) Handles clearResults.Click
+        Me.Controls.RemoveByKey("TestLabel")
+        For index As Integer = 1 To count
+            Me.Controls.RemoveByKey("tbNew" & index)
+            Me.Controls.RemoveByKey("labelNew" & index)
+        Next
+    End Sub
 End Class
