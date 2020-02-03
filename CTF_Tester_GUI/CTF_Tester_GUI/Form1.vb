@@ -1,6 +1,4 @@
-Imports System.IO
 Imports System.IO.Ports
-Imports System.Threading
 ' Windows GUI for the CTF Tester
 ' ToDo
 '   - add a check that will be sent from arduino to verify the test is completed
@@ -10,6 +8,7 @@ Public Class Form1
     Dim count As Integer
     Dim check_short As Boolean
     Dim check_continunity As Boolean
+    Shared globalArr As Array
     'Dim pin_array(0 To 10) As Integer
     ' Load the GUI and open up the serial ports
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -30,37 +29,69 @@ Public Class Form1
     ' If the pin_count not accepted, prompt user to enter another one
     Private Sub start_test_btn_Click(sender As Object, e As EventArgs) Handles start_test_btn.Click
         Dim pin_count = ffc_pin_count.Text
+        Dim fileName = txtFileName.Text
+        Dim dataDirectory As String = String.Format("{0}", Environment.CurrentDirectory)
         If (pin_count <> "1-50" And Trim(pin_count & vbNullString) <> vbNullString) Then
-            Dim pin_array(0 To pin_count) As Integer
+            Dim pin_array(0 To pin_count) As String
             count = pin_count
             MsgBox("Starting Test...")
             'writeSerial({pin_count})
             'readSerial(pin_array)
-            'MsgBox("Test Complete")
-            'For Each value As Integer In pin_array
-            'MsgBox(value)
-            'Next
-            addTextBoxes()
-
+            addTextBoxes(pin_array)
+            globalArr = pin_array
+            ' clean all these guys up
+            If Trim(fileName & vbNullString) <> vbNullString Then
+                writeToFile(dataDirectory + "\" + fileName)
+                MsgBox("Wrote Debug at: " + dataDirectory + "\" + fileName)
+            Else
+                writeToFile(dataDirectory + "\CTF_DEBUG_LOG.txt")
+                MsgBox("Wrote Debug at: " + dataDirectory + "\CTF_DEBUG_LOG.txt")
+            End If
         Else
             MsgBox("Please enter the number of FFC traces.", +vbExclamation)
         End If
 
     End Sub
+    Private Sub writeToFile(ByVal fileName As String)
+        Dim file As System.IO.StreamWriter
+        file = My.Computer.FileSystem.OpenTextFileWriter(fileName, True)
+        file.WriteLine("Start Test: " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"))
+        file.Write("Testing for Continuity: ")
+        If check_continunity Then
+            file.WriteLine(" YES")
+        Else
+            file.WriteLine(" NO")
+        End If
+        file.Write("Testing for Shorts: ")
+        If check_short Then
+            file.WriteLine(" YES")
+        Else
+            file.WriteLine(" NO" & vbNewLine)
+        End If
+        For i As Integer = 1 To count
+            file.WriteLine("Pin #" & i & " IS TESTING")
+        Next
+        file.Close()
+    End Sub
     ' Dynamically add textboxes
-    Private Sub addTextBoxes()
+    Private Sub addTextBoxes(ByVal pin_count)
         Dim yValue = 77
         Dim TestLabel = New Label
         TestLabel.Text = "Test Results"
         TestLabel.Name = "TestLabel"
-        TestLabel.Location = New Point(542, 60)
+        TestLabel.Location = New Point(532, 60)
+        TestLabel.Size = New System.Drawing.Size(78, 61)
         For index As Integer = 1 To count
             Dim NewTB = New TextBox
             Dim NewLB = New Label
             NewTB.Name = "tbNew" & index
-            NewLB.Name = "labelNew" & index ' give these guys unique names in order to change them later on 
+            NewLB.Name = "labelNew" & index
             NewLB.Text = "Pin " & index
-            NewTB.Text = "PASSED" ' change this to a nice ol' if-statement
+            If pin_count(index) > 0 Then
+                NewTB.Text = "PASSED"
+            Else
+                NewTB.Text = "FAILED"
+            End If
             AddHandler NewTB.TextChanged, AddressOf HandleTextChanged
             NewTB.Location = New Point(536, yValue)
             NewLB.Location = New Point(500, yValue + 2)
@@ -112,9 +143,9 @@ Public Class Form1
     ' If we receive a 0, the pin failed 
     Private Sub readSerial(ByRef pin_array)
         Dim count As Integer
-
         SerialPort1.Open()
-        While True  ' Poll for data until we recieve the stop bit
+        While True
+            ' Poll for data until we recieve the stop bit
             Try
                 Dim incoming As String = SerialPort1.ReadExisting()
                 If incoming <> Nothing Then
@@ -133,21 +164,18 @@ Public Class Form1
     ' display all values from CTF test in MsgBox's, for now
     ' eventually add textboxes to populate
     Private Sub results_btn_Click(sender As Object, e As EventArgs) Handles results_btn.Click
-
         ' swap failing pins with -1 value to detect them
         'For Each i As Integer In pin_array
         'If i < 0 Then
         'i = -1
         'End If
         'Next
-
         ' Display and verify the passed\failed pins
-        'For Each value As Integer In pin_array
-        'MsgBox(value)
-        'Next
+        For Each value As Integer In globalArr
+            MsgBox(value)
+        Next
 
     End Sub
-
     Private Sub clearResults_Click(sender As Object, e As EventArgs) Handles clearResults.Click
         Me.Controls.RemoveByKey("TestLabel")
         For index As Integer = 1 To count
@@ -155,4 +183,5 @@ Public Class Form1
             Me.Controls.RemoveByKey("labelNew" & index)
         Next
     End Sub
+
 End Class
